@@ -45,7 +45,6 @@ public class HelloController {
     }
 
     int ValidarCaracteres(String Linea) throws IOException {
-
         int Estado = 1;
             for (char c : Linea.toCharArray()){
 
@@ -70,9 +69,7 @@ public class HelloController {
                         } else {
                             throw new IllegalArgumentException("Argumento no valido:  " + c);
                         }
-
                 }
-
             }
         return Estado;
     }
