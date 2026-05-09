@@ -1,0 +1,67 @@
+package fes.aragon.compilador;
+import java_cup.runtime.*;
+import java.io.*;
+import java.util.*;
+
+action code{:
+    public void imprimirValor(String str){
+       System.out.println("El resultado de la expresión es: " + str);
+    }
+:};
+
+parser code{:
+    public static TablaSimbolos tabla = new TablaSimbolos();
+    public static Lexico lex;
+
+    public void syntax_error(Symbol st){
+       System.out.println("Error sintáctico en la línea " + (lex.getYyline() + 1) +
+                    " columna: " + lex.getYycolumn());
+    }
+
+    public void cargar(String archivo, TablaSimbolos t) throws Exception{
+       lex = new Lexico(new FileReader(new File(archivo)), t);
+       new parser(lex).parse();
+    }
+:};
+
+/* Terminales (deben coincidir con JFlex) */
+terminal PUNTOYCOMA, OR, AND, NOT, TRUE, FALSE, LPAREN, RPAREN;
+terminal Datos ID;
+
+/* No terminales */
+non terminal expr_lista, expr_parte;
+non terminal Boolean expr;
+
+/* Precedencia (Jerarquía: NOT es mayor que AND, y AND mayor que OR) */
+precedence left OR;
+precedence left AND;
+precedence right NOT;
+
+/* Gramática */
+
+expr_lista ::= expr_lista expr_parte
+       | expr_parte
+       | error PUNTOYCOMA {: System.out.println("Recuperando error sintáctico..."); :};
+
+expr_parte ::= expr:e PUNTOYCOMA
+    {:
+        imprimirValor(String.valueOf(e));
+    :};
+
+expr ::= expr:e1 OR expr:e2
+    {: RESULT = e1 || e2; :}
+    | expr:e1 AND expr:e2
+    {: RESULT = e1 && e2; :}
+    | NOT expr:e
+    {: RESULT = !e; :}
+    | TRUE
+    {: RESULT = true; :}
+    | FALSE
+    {: RESULT = false; :}
+    | ID:s
+    {:
+        // Suponiendo que la tabla guarda "true" o "false" como String
+        RESULT = Boolean.valueOf(s.getValor());
+    :}
+    | LPAREN expr:e RPAREN
+    {: RESULT = e; :};
