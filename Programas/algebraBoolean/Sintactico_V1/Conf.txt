@@ -1,0 +1,103 @@
+package fes.aragon.codigo;
+%%
+%public
+%class Lexico
+%line
+%char
+%column
+%full
+%type Tokens
+%{
+private boolean hayToken=false;
+public boolean getHayToken(){
+    return this.hayToken;
+}
+%}
+%type Tokens
+%init{
+    /*Codigo que se ejecuta en el constructor de la clase*/
+%init}
+%eof{
+    /*Codigo que se ejecuta al terminar el analisis*/
+    this.hayToken=false;
+%eof}
+
+/* Definiciones de Macros */
+Espacio     = " " | \t | \f
+PuntoComa   = ";"
+OR          = "or"
+AND         = "and"
+NOT         = "not"
+TRUE        = "true"
+FALSE       = "false"
+PAR_A       = "("
+PAR_C       = ")"
+saltoLinea  = \n|\r|\r\n
+
+%%
+
+/* Reglas de Escaneo */
+
+{OR} {
+    Tokens tok = new Tokens(yytext(), Sym.OR, yyline, yycolumn);
+    this.hayToken = true;
+    return tok;
+}
+
+{AND} {
+    Tokens tok = new Tokens(yytext(), Sym.AND, yyline, yycolumn);
+    this.hayToken = true;
+    return tok;
+}
+
+{NOT} {
+    Tokens tok = new Tokens(yytext(), Sym.NOT, yyline, yycolumn);
+    this.hayToken = true;
+    return tok;
+}
+
+{TRUE} {
+    Tokens tok = new Tokens(yytext(), Sym.TRUE, yyline, yycolumn);
+    this.hayToken = true;
+    return tok;
+}
+
+{FALSE} {
+    Tokens tok = new Tokens(yytext(), Sym.FALSE, yyline, yycolumn);
+    this.hayToken = true;
+    return tok;
+}
+
+{PAR_A} {
+    Tokens tok = new Tokens(yytext(), Sym.PAR_A, yyline, yycolumn);
+    this.hayToken = true;
+    return tok;
+}
+
+{PAR_C} {
+    Tokens tok = new Tokens(yytext(), Sym.PAR_C, yyline, yycolumn);
+    this.hayToken = true;
+    return tok;
+}
+
+{PuntoComa} {
+    Tokens tok = new Tokens(yytext(), Sym.PUNTOCOMA, yyline, yycolumn);
+    this.hayToken = true;
+    return tok;
+}
+
+{saltoLinea} {
+    /* Si decides procesar saltos de línea como tokens, descomenta lo siguiente:
+    Tokens tok = new Tokens(yytext(), Sym.SALTOLINEA, yyline, yycolumn);
+    this.hayToken = true;
+    return tok; */
+}
+
+{Espacio} { /* Ignorar espacios en blanco */ }
+
+. {
+    String errLex = "Error léxico : '" + yytext() + "' en la línea: "
+    + (yyline + 1) + " y columna: " + (yycolumn + 1);
+    System.out.println(errLex);
+    this.hayToken = false;
+}
