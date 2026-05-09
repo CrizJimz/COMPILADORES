@@ -1,0 +1,59 @@
+package fes.aragon.tokens;
+
+%%
+%class Lexico
+%line
+%column
+%type Tokens
+L=[a-zA-Z]
+D=[0-9]
+espacio=[ \t\r\n]
+%{
+	public String lexema;
+	public int getYyline(){
+	    return yyline+1;
+	}
+	public int getYycolumn(){
+	    return yycolumn;
+	}
+%}
+%%
+
+/* Espacios en blanco */
+{espacio} {/*no hace nada*/}
+
+/* Palabras reservadas */
+"inicio"				{lexema=yytext(); return Tokens.INICIO;}
+
+/* Operadores Aritméticos (q23, q24, q25, q26 de imagen_2.jpg) */
+"+"						{lexema=yytext(); return Tokens.SUMA;}
+"-"						{lexema=yytext(); return Tokens.RESTA;}
+"*"						{lexema=yytext(); return Tokens.MULTIPLICACION;}
+"/"						{lexema=yytext(); return Tokens.DIVISION;}
+
+/* Operadores Relacionales y Asignación (q16-q22 de imagen_2.jpg) */
+"=="					{lexema=yytext(); return Tokens.IGUAL_QUE;}
+"!="					{lexema=yytext(); return Tokens.DIFERENTE;}
+">="					{lexema=yytext(); return Tokens.MAYOR_IGUAL_QUE;}
+"<="					{lexema=yytext(); return Tokens.MENOR_IGUAL_QUE;}
+"="						{lexema=yytext(); return Tokens.ASIGNACION;}
+">"						{lexema=yytext(); return Tokens.MAYOR_QUE;}
+"<"						{lexema=yytext(); return Tokens.MENOR_QUE;}
+"!"						{lexema=yytext(); return Tokens.ADMIRACION;}
+
+/* Signos de Puntuación (q11, q12, q8, q9 de imagen.jpg) */
+"("						{lexema=yytext(); return Tokens.PAR_ABIERTO;}
+")"						{lexema=yytext(); return Tokens.PAR_CERRADO;}
+";"						{lexema=yytext(); return Tokens.PUNTO_COMA;}
+":"						{lexema=yytext(); return Tokens.DOS_PUNTOS;}
+
+/* Identificadores (q1 -> q2 de imagen.jpg) */
+{L}({L}|{D})*			{lexema=yytext(); return Tokens.ID;}
+
+/* Números Reales y Enteros (q3, q4, q7 de imagen.jpg) */
+/* IMPORTANTE: El decimal debe ir antes que el entero */
+{D}+"."{D}+             {lexema=yytext(); return Tokens.FLOAT;}
+{D}+                	{lexema=yytext(); return Tokens.INT;}
+
+/* Cualquier otro caracter no definido */
+.						{lexema=yytext(); return Tokens.ERROR;}

@@ -1,0 +1,7 @@
+inicio
+suma = 32 + 10.5;
+resultado = (valor1 >= valor2);
+division = 100 / 2;
+id test : 500
+== != < > <=
+( ) ; : !
